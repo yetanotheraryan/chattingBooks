@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import multer from "multer";
+import { extractText } from "./services/document.services";
 
 const app = express();
 
@@ -31,18 +32,21 @@ app.post(
         });
       }
 
-      const { originalname, mimetype, buffer } = req.file;
+      const text = await extractText(
+        req.file.buffer,
+        req.file.mimetype
+      );
 
-      console.log({
-        originalname,
-        mimetype,
-        size: buffer.length
-      });
+      console.log("Extracted text:");
+      console.log(text);
 
       return res.json({
-        message: "File uploaded successfully",
-        filename: originalname
+        message: "Document processed",
+        filename: req.file.originalname,
+        characters: text.length,
+        text
       });
+
     } catch (error) {
       console.error(error);
 
