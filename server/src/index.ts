@@ -12,6 +12,9 @@ import {
 } from "./services/retrieval.service";
 import { generateAnswer } from "./services/llm.service";
 const documentId = crypto.randomUUID();
+const chunkSize = Number(process.env.CHUNK_SIZE) || 100;
+const chunkOverLap = Number(process.env.CHUNK_OVERLAP) || 20;
+
 
 const app = express();
 
@@ -48,7 +51,7 @@ app.post(
       );
 
       // 2. Split text
-      const chunks = chunkText(text);
+      const chunks = chunkText(text, chunkSize, chunkOverLap);
 
       console.log(
         `Created ${chunks.length} chunks`

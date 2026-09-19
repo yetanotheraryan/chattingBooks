@@ -2,11 +2,10 @@ export interface DocumentChunk {
   content: string;
   chunkIndex: number;
 }
-
 export function chunkText(
   text: string,
-  chunkSize = 1000,
-  overlap = 200
+  chunkSize: number,
+  overlap: number
 ): DocumentChunk[] {
   const chunks: DocumentChunk[] = [];
 
