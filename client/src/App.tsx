@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+const API_BASE_URL = import.meta.env.VITE_HOST_URL;
 type Message = {
   id: string;
   role: "user" | "assistant";
@@ -25,7 +26,7 @@ function App() {
     setUploading(true);
     try {
       const response = await fetch(
-        "http://localhost:3000/documents/upload",
+        `${API_BASE_URL}/documents/upload`,
         {
           method: "POST",
           body: formData
@@ -62,7 +63,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/chat",
+        `${API_BASE_URL}/chat`,
         {
           method: "POST",
           headers: {
