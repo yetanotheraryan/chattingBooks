@@ -12,8 +12,8 @@ import {
 } from "./services/retrieval.service";
 import { generateAnswer } from "./services/llm.service";
 const documentId = crypto.randomUUID();
-const chunkSize = Number(process.env.CHUNK_SIZE) || 100;
-const chunkOverLap = Number(process.env.CHUNK_OVERLAP) || 20;
+const chunkSize = Number(process.env.CHUNK_SIZE) || 1000;
+const chunkOverLap = Number(process.env.CHUNK_OVERLAP) || 200;
 
 
 const app = express();
