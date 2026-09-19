@@ -45,6 +45,51 @@ function App() {
     }
   };
 
+  const askQuestion = async () => {
+    if (!documentId || !question) return;
+
+    const currentQuestion = question;
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: currentQuestion,
+    }
+
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+    setQuestion("");
+    setAsking(true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            documentId,
+            question: currentQuestion,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      const aiMessage: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: data.answer,
+      }
+      setMessages((prevMessages) => [...prevMessages, aiMessage]);
+    } catch (error) {
+      console.error("Error asking question:", error);
+    } finally {
+      setAsking(false);
+    }
+
+  }
+
   return (
     <div>
       <h1>RAG Chatbot</h1>
@@ -97,25 +142,34 @@ function App() {
             ))}
           </div>
           <div>
-            <input
-              type="text"
-              value={question}
-              placeholder="Ask anything about your document..."
-              onChange={(event) => {
-                setQuestion(event.target.value);
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                askQuestion();
               }}
-            />
+            >
+              <input
+                type="text"
+                value={question}
+                placeholder="Ask anything about your document..."
+                onChange={(event) => {
+                  setQuestion(event.target.value);
+                }}
+              />
 
-            <button disabled={asking}>
-              {asking ? "Thinking..." : "Send"}
-            </button>
+              <button
+                disabled={asking || !question.trim()}
+                onClick={askQuestion}
+              >
+                {asking ? "Thinking..." : "Send"}
+              </button>
+            </form>
           </div>
-
-          
         </div>
-      )}
+      )
+      }
 
-    </div>
+    </div >
 
 
   );

@@ -10,6 +10,7 @@ import crypto from "node:crypto";
 import {
   retrieveRelevantChunks,
 } from "./services/retrieval.service";
+import { generateAnswer } from "./services/llm.service";
 const documentId = crypto.randomUUID();
 
 const app = express();
@@ -99,15 +100,19 @@ app.post("/chat", async (req, res) => {
       });
     }
 
-    const chunks =
-      await retrieveRelevantChunks(
-        documentId,
-        question
-      );
+    const chunks = await retrieveRelevantChunks(documentId, question);
+    console.log("Retrieved chunks:", chunks);
+    const context = chunks.map((chunk, index)=> `[Source ${index+1}\n${chunk.content}]`).join("\n\n");
+    console.log("before generate LLM context: ", context);
+    const answer = await generateAnswer({
+      question, 
+      context
+    })
+
 
     return res.json({
-      question,
-      results: chunks.map(chunk => ({
+      answer,
+      sources: chunks.map((chunk) => ({
         content: chunk.content,
         score: chunk.score,
         chunkIndex: chunk.chunkIndex,
